@@ -1,0 +1,113 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:is(.dark *));
+
+/*
+ * Design tokens.
+ *
+ * Each shadcn/ui semantic token is mapped onto the matching Telegram theme
+ * variable (`--tg-theme-*`, injected at runtime by `themeParams.bindCssVars()`
+ * / `miniApp.bindCssVars()`), with a sensible fallback so the app still looks
+ * correct when running OUTSIDE Telegram (e.g. `npm run dev` in a browser).
+ *
+ * `.dark` only changes the fallbacks — inside Telegram the `--tg-theme-*`
+ * values win in both modes, and `<ThemeSync>` keeps `.dark` in sync with the
+ * Telegram client's color scheme.
+ */
+:root {
+  --radius: 0.625rem;
+
+  --background: var(--tg-theme-bg-color, oklch(1 0 0));
+  --foreground: var(--tg-theme-text-color, oklch(0.145 0 0));
+  --card: var(--tg-theme-section-bg-color, oklch(1 0 0));
+  --card-foreground: var(--tg-theme-text-color, oklch(0.145 0 0));
+  --popover: var(--tg-theme-bg-color, oklch(1 0 0));
+  --popover-foreground: var(--tg-theme-text-color, oklch(0.145 0 0));
+  --primary: var(--tg-theme-button-color, oklch(0.205 0 0));
+  --primary-foreground: var(--tg-theme-button-text-color, oklch(0.985 0 0));
+  --secondary: var(--tg-theme-secondary-bg-color, oklch(0.97 0 0));
+  --secondary-foreground: var(--tg-theme-text-color, oklch(0.205 0 0));
+  --muted: var(--tg-theme-secondary-bg-color, oklch(0.97 0 0));
+  --muted-foreground: var(--tg-theme-hint-color, oklch(0.556 0 0));
+  --accent: var(--tg-theme-secondary-bg-color, oklch(0.97 0 0));
+  --accent-foreground: var(--tg-theme-text-color, oklch(0.205 0 0));
+  --destructive: var(--tg-theme-destructive-text-color, oklch(0.577 0.245 27.325));
+  --border: var(--tg-theme-section-separator-color, oklch(0.922 0 0));
+  --input: var(--tg-theme-section-separator-color, oklch(0.922 0 0));
+  --ring: var(--tg-theme-button-color, oklch(0.708 0 0));
+
+  --link: var(--tg-theme-link-color, oklch(0.55 0.18 256));
+}
+
+.dark {
+  --background: var(--tg-theme-bg-color, oklch(0.145 0 0));
+  --foreground: var(--tg-theme-text-color, oklch(0.985 0 0));
+  --card: var(--tg-theme-section-bg-color, oklch(0.205 0 0));
+  --card-foreground: var(--tg-theme-text-color, oklch(0.985 0 0));
+  --popover: var(--tg-theme-bg-color, oklch(0.205 0 0));
+  --popover-foreground: var(--tg-theme-text-color, oklch(0.985 0 0));
+  --primary: var(--tg-theme-button-color, oklch(0.922 0 0));
+  --primary-foreground: var(--tg-theme-button-text-color, oklch(0.205 0 0));
+  --secondary: var(--tg-theme-secondary-bg-color, oklch(0.269 0 0));
+  --secondary-foreground: var(--tg-theme-text-color, oklch(0.985 0 0));
+  --muted: var(--tg-theme-secondary-bg-color, oklch(0.269 0 0));
+  --muted-foreground: var(--tg-theme-hint-color, oklch(0.708 0 0));
+  --accent: var(--tg-theme-secondary-bg-color, oklch(0.269 0 0));
+  --accent-foreground: var(--tg-theme-text-color, oklch(0.985 0 0));
+  --destructive: var(--tg-theme-destructive-text-color, oklch(0.704 0.191 22.216));
+  --border: var(--tg-theme-section-separator-color, oklch(1 0 0 / 10%));
+  --input: var(--tg-theme-section-separator-color, oklch(1 0 0 / 15%));
+  --ring: var(--tg-theme-button-color, oklch(0.556 0 0));
+
+  --link: var(--tg-theme-link-color, oklch(0.7 0.15 256));
+}
+
+@theme inline {
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-link: var(--link);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+
+  html,
+  body,
+  #root {
+    height: 100%;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    margin: 0;
+    font-family:
+      ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica,
+      Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    /* Prevent the Telegram WebView from over-scrolling / rubber-banding. */
+    overscroll-behavior-y: none;
+  }
+}
