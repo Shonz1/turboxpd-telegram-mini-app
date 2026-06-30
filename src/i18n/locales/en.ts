@@ -21,6 +21,13 @@ const en = {
     stopService: "Stop service",
     searchVehicles: "Search by unit, plate or VIN…",
     noVehiclesFound: "No vehicles match your search.",
+    serviceStatus: "Service Status",
+    statusInService: "In Service",
+    statusAvailable: "Available",
+    statusOutOfService: "Out of Service",
+    enterEditMode: "Edit vehicles",
+    exitEditMode: "Done editing",
+    editModeHint: "Tap a date to change it.",
   },
   profile: {
     title: "Profile",

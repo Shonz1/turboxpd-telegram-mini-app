@@ -21,6 +21,13 @@ const uk = {
     stopService: "Зупинити сервіс",
     searchVehicles: "Пошук за назвою, номером або VIN…",
     noVehiclesFound: "Жодного ТЗ не знайдено.",
+    serviceStatus: "Статус сервісу",
+    statusInService: "На службі",
+    statusAvailable: "Доступний",
+    statusOutOfService: "Поза службою",
+    enterEditMode: "Редагувати",
+    exitEditMode: "Готово",
+    editModeHint: "Натисніть на дату, щоб змінити її.",
   },
   profile: {
     title: "Профіль",

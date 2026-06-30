@@ -21,6 +21,13 @@ const ru = {
     stopService: "Остановить сервис",
     searchVehicles: "Поиск по названию, номеру или VIN…",
     noVehiclesFound: "Транспортные средства не найдены.",
+    serviceStatus: "Статус сервиса",
+    statusInService: "На службе",
+    statusAvailable: "Доступен",
+    statusOutOfService: "Не на службе",
+    enterEditMode: "Редактировать",
+    exitEditMode: "Готово",
+    editModeHint: "Нажмите на дату, чтобы изменить её.",
   },
   profile: {
     title: "Профиль",
