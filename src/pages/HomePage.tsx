@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { initData, useSignal } from "@telegram-apps/sdk-react";
-import { Car, CheckCircle2, Info, RefreshCw } from "lucide-react";
+import { Car, CheckCircle2, Info, RefreshCw, StopCircle } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -63,6 +63,7 @@ function VehicleCard({
   onRenewRegistration,
   onRenewCoi,
   onUpdateInfo,
+  onStopService,
 }: {
   vehicle: Vehicle;
   isActive: boolean;
@@ -70,6 +71,7 @@ function VehicleCard({
   onRenewRegistration: () => void;
   onRenewCoi: () => void;
   onUpdateInfo: () => void;
+  onStopService: () => void;
 }) {
   const regExpired = isExpired(vehicle.registrationEndDate);
   const coiExpired = isExpired(vehicle.coiEndDate);
@@ -158,7 +160,16 @@ function VehicleCard({
               onClick={onUpdateInfo}
             >
               <Info className="size-3" />
-              Update Info
+              Service
+            </Button>
+            <Button
+              size="sm"
+              variant="destructive"
+              className="h-8 text-xs gap-1.5"
+              onClick={onStopService}
+            >
+              <StopCircle className="size-3" />
+              Stop service
             </Button>
           </div>
         </div>
@@ -236,6 +247,7 @@ export function HomePage() {
                     setRenewal({ vehicleId: vehicle.id, type: "coi" })
                   }
                   onUpdateInfo={() => setUpdateInfoVehicleId(vehicle.id)}
+                  onStopService={() => console.log("Stop service", vehicle.id)}
                 />
               </div>
             ))
