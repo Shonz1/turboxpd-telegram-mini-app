@@ -96,7 +96,7 @@ export function UpdateInfoModal({
                 variant="outline"
                 onClick={handleCurrentLocation}
                 disabled={locating}
-                className="shrink-0 gap-1.5 px-3 text-sm cursor-pointer self-stretch"
+                className="shrink-0 gap-1.5 px-3 text-sm cursor-pointer h-auto py-2"
               >
                 <LocateFixed className="size-3.5" />
                 {locating ? "Locating…" : "Current"}
