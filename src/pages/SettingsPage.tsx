@@ -5,6 +5,7 @@ import {
   useLaunchParams,
   useSignal,
 } from "@telegram-apps/sdk-react";
+import { useTranslation } from "react-i18next";
 import { Info, Vibrate } from "lucide-react";
 
 import {
@@ -37,6 +38,7 @@ function SettingRow({
 }
 
 export function SettingsPage() {
+  const { t } = useTranslation();
   const isDark = useSignal(miniApp.isDark);
   const launchParams = useLaunchParams();
   const [haptics, setHaptics] = useState(true);
@@ -50,22 +52,26 @@ export function SettingsPage() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold tracking-tight">Settings</h1>
+      <h1 className="text-2xl font-bold tracking-tight">
+        {t("settings.title")}
+      </h1>
 
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">Preferences</CardTitle>
+          <CardTitle className="text-base">{t("settings.preferences")}</CardTitle>
         </CardHeader>
         <CardContent>
           <SettingRow
-            title="Follow Telegram theme"
-            description={`Color scheme currently ${isDark ? "dark" : "light"}`}
+            title={t("settings.followTheme")}
+            description={t("settings.colorScheme", {
+              scheme: isDark ? t("settings.dark") : t("settings.light"),
+            })}
             control={<Switch checked disabled aria-readonly />}
           />
           <Separator />
           <SettingRow
-            title="Haptic feedback"
-            description="Vibrate on supported interactions"
+            title={t("settings.hapticFeedback")}
+            description={t("settings.hapticFeedbackSub")}
             control={
               <Switch checked={haptics} onCheckedChange={toggleHaptics} />
             }
@@ -77,24 +83,30 @@ export function SettingsPage() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-base">
             <Info className="size-4" />
-            About
+            {t("settings.about")}
           </CardTitle>
         </CardHeader>
         <CardContent className="text-sm">
           <div className="flex items-center justify-between py-2">
-            <span className="text-muted-foreground">App version</span>
+            <span className="text-muted-foreground">
+              {t("settings.appVersion")}
+            </span>
             <span className="font-medium">{APP_VERSION}</span>
           </div>
           <Separator />
           <div className="flex items-center justify-between py-2">
-            <span className="text-muted-foreground">Platform</span>
+            <span className="text-muted-foreground">
+              {t("settings.platform")}
+            </span>
             <span className="font-medium">
               {launchParams.tgWebAppPlatform ?? "—"}
             </span>
           </div>
           <Separator />
           <div className="flex items-center justify-between py-2">
-            <span className="text-muted-foreground">Telegram version</span>
+            <span className="text-muted-foreground">
+              {t("settings.telegramVersion")}
+            </span>
             <span className="font-medium">
               {launchParams.tgWebAppVersion ?? "—"}
             </span>
@@ -104,7 +116,7 @@ export function SettingsPage() {
 
       <p className="text-muted-foreground flex items-center justify-center gap-1.5 text-xs">
         <Vibrate className="size-3" />
-        Built with React, telegram-apps SDK & shadcn/ui
+        {t("settings.builtWith")}
       </p>
     </div>
   );

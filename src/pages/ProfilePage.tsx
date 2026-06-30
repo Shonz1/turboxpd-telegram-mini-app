@@ -1,4 +1,5 @@
 import { initData, useSignal } from "@telegram-apps/sdk-react";
+import { useTranslation } from "react-i18next";
 import { AtSign, BadgeCheck, Globe, Hash } from "lucide-react";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -36,16 +37,18 @@ function Row({
 }
 
 export function ProfilePage() {
+  const { t } = useTranslation();
   const user = useSignal(initData.user);
 
   if (!user) {
     return (
       <div className="space-y-4">
-        <h1 className="text-2xl font-bold tracking-tight">Profile</h1>
+        <h1 className="text-2xl font-bold tracking-tight">
+          {t("profile.title")}
+        </h1>
         <Card>
           <CardContent className="text-muted-foreground text-sm">
-            No Telegram user data is available. Open this app from inside
-            Telegram to see your profile.
+            {t("profile.noData")}
           </CardContent>
         </Card>
       </div>
@@ -54,7 +57,9 @@ export function ProfilePage() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold tracking-tight">Profile</h1>
+      <h1 className="text-2xl font-bold tracking-tight">
+        {t("profile.title")}
+      </h1>
 
       <Card>
         <CardHeader>
@@ -82,17 +87,17 @@ export function ProfilePage() {
         </CardHeader>
         <CardContent>
           <Separator />
-          <Row icon={Hash} label="User ID" value={user.id} />
+          <Row icon={Hash} label={t("profile.userId")} value={user.id} />
           <Separator />
           <Row
             icon={AtSign}
-            label="Username"
+            label={t("profile.username")}
             value={user.username ? `@${user.username}` : "—"}
           />
           <Separator />
           <Row
             icon={Globe}
-            label="Language"
+            label={t("profile.language")}
             value={user.language_code?.toUpperCase() ?? "—"}
           />
         </CardContent>

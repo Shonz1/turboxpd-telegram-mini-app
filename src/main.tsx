@@ -1,11 +1,13 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { HashRouter } from "react-router-dom";
+import { initData } from "@telegram-apps/sdk-react";
 
 // Mock the Telegram environment BEFORE anything from the SDK is initialized,
 // so the app is fully workable when opened outside Telegram during development.
 import { setupMockEnv } from "@/telegram/mockEnv";
 import { init } from "@/telegram/init";
+import { initI18n } from "@/i18n";
 
 import App from "@/App";
 import "@/index.css";
@@ -25,6 +27,8 @@ try {
 } catch (err) {
   console.error("Failed to initialize the Telegram SDK", err);
 }
+
+initI18n(initData.user()?.language_code);
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
