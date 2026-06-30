@@ -1,5 +1,5 @@
 import { initData, useSignal } from "@telegram-apps/sdk-react";
-import { AtSign, BadgeCheck, Globe, Hash } from "lucide-react";
+import { AtSign, BadgeCheck, Car, Globe, Hash } from "lucide-react";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
@@ -10,6 +10,81 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+
+interface Vehicle {
+  id: string;
+  unit: string;
+  plateNumber: string;
+  vin: string;
+  registrationEndDate: string;
+  coiEndDate: string;
+}
+
+const MOCK_VEHICLES: Vehicle[] = [
+  {
+    id: "1",
+    unit: "Unit 101",
+    plateNumber: "ABC-1234",
+    vin: "1HGCM82633A123456",
+    registrationEndDate: "2025-03-15",
+    coiEndDate: "2025-06-30",
+  },
+  {
+    id: "2",
+    unit: "Unit 205",
+    plateNumber: "XYZ-5678",
+    vin: "2T1BURHE0JC043821",
+    registrationEndDate: "2024-11-01",
+    coiEndDate: "2025-01-15",
+  },
+];
+
+function formatDate(dateStr: string) {
+  return new Date(dateStr).toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  });
+}
+
+function isExpired(dateStr: string) {
+  return new Date(dateStr) < new Date();
+}
+
+function VehicleCard({ vehicle }: { vehicle: Vehicle }) {
+  const regExpired = isExpired(vehicle.registrationEndDate);
+  const coiExpired = isExpired(vehicle.coiEndDate);
+
+  return (
+    <div className="space-y-2 py-4">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <Car className="text-muted-foreground size-4" />
+          <span className="font-medium">{vehicle.unit}</span>
+        </div>
+        <Badge variant="outline">{vehicle.plateNumber}</Badge>
+      </div>
+      <div className="text-muted-foreground grid grid-cols-1 gap-1 pl-6 text-xs">
+        <div className="flex justify-between">
+          <span>VIN</span>
+          <span className="font-mono">{vehicle.vin}</span>
+        </div>
+        <div className="flex justify-between">
+          <span>Registration Ends</span>
+          <span className={regExpired ? "text-destructive font-medium" : ""}>
+            {formatDate(vehicle.registrationEndDate)}
+          </span>
+        </div>
+        <div className="flex justify-between">
+          <span>COI Ends</span>
+          <span className={coiExpired ? "text-destructive font-medium" : ""}>
+            {formatDate(vehicle.coiEndDate)}
+          </span>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 function initials(first?: string, last?: string) {
   return `${first?.[0] ?? ""}${last?.[0] ?? ""}`.toUpperCase() || "?";
@@ -95,6 +170,27 @@ export function ProfilePage() {
             label="Language"
             value={user.language_code?.toUpperCase() ?? "—"}
           />
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-base">
+            <Car className="size-4" />
+            Vehicles
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          {MOCK_VEHICLES.length === 0 ? (
+            <p className="text-muted-foreground text-sm">No vehicles assigned.</p>
+          ) : (
+            MOCK_VEHICLES.map((vehicle, index) => (
+              <div key={vehicle.id}>
+                {index > 0 && <Separator />}
+                <VehicleCard vehicle={vehicle} />
+              </div>
+            ))
+          )}
         </CardContent>
       </Card>
     </div>
