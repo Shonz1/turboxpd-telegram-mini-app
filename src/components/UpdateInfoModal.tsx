@@ -12,7 +12,7 @@ import {
 
 export interface VehicleInfo {
   location: string;
-  availableAt: string;
+  availableAt?: string;
 }
 
 interface UpdateInfoModalProps {
@@ -48,10 +48,10 @@ export function UpdateInfoModal({
   }
 
   function handleConfirm() {
-    if (!location || !availableAt) return;
+    if (!location) return;
     setSubmitting(true);
     setTimeout(() => {
-      onConfirm({ location, availableAt });
+      onConfirm({ location, availableAt: availableAt || undefined });
       setSubmitting(false);
       onOpenChange(false);
     }, 600);
@@ -96,7 +96,7 @@ export function UpdateInfoModal({
                 variant="outline"
                 onClick={handleCurrentLocation}
                 disabled={locating}
-                className="shrink-0 gap-1.5 h-9 px-3 text-sm cursor-pointer"
+                className="shrink-0 gap-1.5 px-3 text-sm cursor-pointer h-auto py-2"
               >
                 <LocateFixed className="size-3.5" />
                 {locating ? "Locating…" : "Current"}
@@ -111,6 +111,7 @@ export function UpdateInfoModal({
             >
               <CalendarClock className="size-4 text-muted-foreground" />
               Available From
+              <span className="text-muted-foreground font-normal text-xs">(optional)</span>
             </label>
             <input
               id="available-at"
@@ -130,7 +131,7 @@ export function UpdateInfoModal({
             </DialogClose>
             <Button
               size="sm"
-              disabled={!location || !availableAt || submitting}
+              disabled={!location || submitting}
               onClick={handleConfirm}
             >
               {submitting ? "Saving…" : "Save"}

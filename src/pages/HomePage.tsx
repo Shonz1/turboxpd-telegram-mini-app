@@ -13,9 +13,7 @@ import {
   Search,
   StopCircle,
   X,
-  Wrench,
-  CheckCheck,
-  Clock,
+  Check,
 } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
@@ -38,7 +36,7 @@ interface Vehicle {
   vin: string;
   registrationEndDate: string;
   coiEndDate: string;
-  serviceStatus: ServiceStatus;
+  serviceStatus: boolean;
   location?: string;
   availableAt?: string;
 }
@@ -51,7 +49,7 @@ const MOCK_VEHICLES: Vehicle[] = [
     vin: "1HGCM82633A123456",
     registrationEndDate: "2025-03-15",
     coiEndDate: "2025-06-30",
-    serviceStatus: "in_service",
+    serviceStatus: true,
     location: "123 Main St, Springfield",
     availableAt: "2026-07-01T08:00",
   },
@@ -62,7 +60,7 @@ const MOCK_VEHICLES: Vehicle[] = [
     vin: "2T1BURHE0JC043821",
     registrationEndDate: "2024-11-01",
     coiEndDate: "2025-01-15",
-    serviceStatus: "available",
+    serviceStatus: false,
   },
 ];
 
@@ -78,27 +76,6 @@ function isExpired(dateStr: string) {
   return new Date(dateStr) < new Date();
 }
 
-const SERVICE_STATUS_CONFIG: Record<
-  ServiceStatus,
-  { labelKey: string; icon: React.ReactNode; className: string }
-> = {
-  in_service: {
-    labelKey: "home.statusInService",
-    icon: <Wrench className="size-3" />,
-    className: "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400",
-  },
-  available: {
-    labelKey: "home.statusAvailable",
-    icon: <CheckCheck className="size-3" />,
-    className: "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400",
-  },
-  out_of_service: {
-    labelKey: "home.statusOutOfService",
-    icon: <Clock className="size-3" />,
-    className: "bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400",
-  },
-};
-
 function InlineDateField({
   value,
   expired,
@@ -111,27 +88,19 @@ function InlineDateField({
   onChange: (v: string) => void;
 }) {
   const [editing, setEditing] = useState(false);
-  const inputRef = useRef<HTMLInputElement>(null);
 
-  function handleClick() {
-    if (!editMode) return;
-    setEditing(true);
-    setTimeout(() => inputRef.current?.focus(), 0);
-  }
-
-  function handleBlur(e: React.FocusEvent<HTMLInputElement>) {
-    if (e.target.value) onChange(e.target.value);
-    setEditing(false);
-  }
-
-  if (editing) {
+  if (editMode && editing) {
     return (
       <input
-        ref={inputRef}
+        // eslint-disable-next-line jsx-a11y/no-autofocus
+        autoFocus
         type="date"
         defaultValue={value}
         min={new Date().toISOString().split("T")[0]}
-        onBlur={handleBlur}
+        onBlur={(e) => {
+          if (e.target.value) onChange(e.target.value);
+          setEditing(false);
+        }}
         onKeyDown={(e) => {
           if (e.key === "Enter") e.currentTarget.blur();
           if (e.key === "Escape") setEditing(false);
@@ -143,7 +112,7 @@ function InlineDateField({
 
   return (
     <span
-      onClick={handleClick}
+      onClick={() => editMode && setEditing(true)}
       className={[
         expired ? "text-destructive font-medium" : "",
         editMode
@@ -214,13 +183,12 @@ function VehicleCard({
         </div>
 
         <div className="flex justify-between items-center">
-          <span>{t("home.serviceStatus")}</span>
-          <span
-            className={`inline-flex items-center gap-1 rounded-full px-1.5 py-0.5 font-medium ${statusConfig.className}`}
-          >
-            {statusConfig.icon}
-            {t(statusConfig.labelKey)}
-          </span>
+          <span>{t("home.service")}</span>
+          {vehicle.serviceStatus ? (
+            <Check className="size-3.5 text-green-600 dark:text-green-400" />
+          ) : (
+            <X className="size-3.5 text-destructive" />
+          )}
         </div>
 
         <div className="flex justify-between items-center">
