@@ -192,7 +192,14 @@ function VehicleCard({
           <span className="font-mono">{vehicle.vin}</span>
         </div>
 
-
+        <div className="flex justify-between items-center">
+          <span>{t("home.serviceStatus")}</span>
+          {vehicle.serviceStatus ? (
+            <Activity className="size-3.5 text-green-600 dark:text-green-400" />
+          ) : (
+            <CircleOff className="size-3.5 text-muted-foreground" />
+          )}
+        </div>
 
         <div className="flex justify-between items-center">
           <span>{t("home.registrationEnds")}</span>
