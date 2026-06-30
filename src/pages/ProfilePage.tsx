@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { initData, useSignal } from "@telegram-apps/sdk-react";
-import { AtSign, BadgeCheck, Car, CheckCircle2, Globe, Hash, RefreshCw } from "lucide-react";
+import { AtSign, BadgeCheck, Car, CheckCircle2, Globe, Hash, Info, RefreshCw } from "lucide-react";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { RenewalModal } from "@/components/RenewalModal";
+import { UpdateInfoModal, type VehicleInfo } from "@/components/UpdateInfoModal";
 
 interface Vehicle {
   id: string;
@@ -21,6 +22,8 @@ interface Vehicle {
   vin: string;
   registrationEndDate: string;
   coiEndDate: string;
+  location?: string;
+  availableAt?: string;
 }
 
 const MOCK_VEHICLES: Vehicle[] = [
@@ -60,12 +63,14 @@ function VehicleCard({
   onActivate,
   onRenewRegistration,
   onRenewCoi,
+  onUpdateInfo,
 }: {
   vehicle: Vehicle;
   isActive: boolean;
   onActivate: () => void;
   onRenewRegistration: () => void;
   onRenewCoi: () => void;
+  onUpdateInfo: () => void;
 }) {
   const regExpired = isExpired(vehicle.registrationEndDate);
   const coiExpired = isExpired(vehicle.coiEndDate);
@@ -105,6 +110,25 @@ function VehicleCard({
             {formatDate(vehicle.coiEndDate)}
           </span>
         </div>
+        {vehicle.location && (
+          <div className="flex justify-between">
+            <span>Location</span>
+            <span className="max-w-[60%] truncate text-right">{vehicle.location}</span>
+          </div>
+        )}
+        {vehicle.availableAt && (
+          <div className="flex justify-between">
+            <span>Available From</span>
+            <span>
+              {new Date(vehicle.availableAt).toLocaleString("en-US", {
+                month: "short",
+                day: "numeric",
+                hour: "2-digit",
+                minute: "2-digit",
+              })}
+            </span>
+          </div>
+        )}
       </div>
       {isActive && (
         <div className="pl-6 pt-2" onClick={(e) => e.stopPropagation()}>
@@ -128,8 +152,13 @@ function VehicleCard({
               <RefreshCw className="size-3" />
               Renew COI
             </Button>
-            <Button size="sm" variant="outline" className="h-8 text-xs gap-1.5">
-              <Car className="size-3" />
+            <Button
+              size="sm"
+              variant="outline"
+              className="h-8 text-xs gap-1.5"
+              onClick={onUpdateInfo}
+            >
+              <Info className="size-3" />
               Update Info
             </Button>
           </div>
@@ -177,8 +206,20 @@ export function ProfilePage() {
   );
   const [vehicles, setVehicles] = useState(MOCK_VEHICLES);
   const [renewal, setRenewal] = useState<RenewalState | null>(null);
+  const [updateInfoVehicleId, setUpdateInfoVehicleId] = useState<string | null>(null);
 
   const renewalVehicle = renewal ? vehicles.find((v) => v.id === renewal.vehicleId) : null;
+  const updateInfoVehicle = updateInfoVehicleId ? vehicles.find((v) => v.id === updateInfoVehicleId) : null;
+
+  function handleUpdateInfoConfirm(info: VehicleInfo) {
+    if (!updateInfoVehicleId) return;
+    setVehicles((prev) =>
+      prev.map((v) =>
+        v.id === updateInfoVehicleId ? { ...v, ...info } : v,
+      ),
+    );
+    setUpdateInfoVehicleId(null);
+  }
 
   function handleRenewConfirm(newDate: string) {
     if (!renewal) return;
@@ -277,12 +318,22 @@ export function ProfilePage() {
                   onRenewCoi={() =>
                     setRenewal({ vehicleId: vehicle.id, type: "coi" })
                   }
+                  onUpdateInfo={() => setUpdateInfoVehicleId(vehicle.id)}
                 />
               </div>
             ))
           )}
         </CardContent>
       </Card>
+
+      {updateInfoVehicle && (
+        <UpdateInfoModal
+          open={!!updateInfoVehicleId}
+          onOpenChange={(open) => { if (!open) setUpdateInfoVehicleId(null); }}
+          vehicleUnit={updateInfoVehicle.unit}
+          onConfirm={handleUpdateInfoConfirm}
+        />
+      )}
 
       {renewalVehicle && renewal && (
         <RenewalModal
