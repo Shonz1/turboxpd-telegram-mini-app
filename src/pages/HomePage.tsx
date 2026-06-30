@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { initData, useSignal } from "@telegram-apps/sdk-react";
+import { useTranslation } from "react-i18next";
 import { Car, CheckCircle2, Info, RefreshCw, StopCircle } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
@@ -73,6 +74,7 @@ function VehicleCard({
   onUpdateInfo: () => void;
   onStopService: () => void;
 }) {
+  const { t } = useTranslation();
   const regExpired = isExpired(vehicle.registrationEndDate);
   const coiExpired = isExpired(vehicle.coiEndDate);
 
@@ -88,7 +90,7 @@ function VehicleCard({
           {isActive && (
             <Badge variant="default" className="text-xs gap-1 py-0">
               <CheckCircle2 className="size-3" />
-              Active
+              {t("home.active")}
             </Badge>
           )}
         </div>
@@ -96,30 +98,30 @@ function VehicleCard({
       </div>
       <div className="text-muted-foreground grid grid-cols-1 gap-1 pl-6 text-xs">
         <div className="flex justify-between">
-          <span>VIN</span>
+          <span>{t("home.vin")}</span>
           <span className="font-mono">{vehicle.vin}</span>
         </div>
         <div className="flex justify-between">
-          <span>Registration Ends</span>
+          <span>{t("home.registrationEnds")}</span>
           <span className={regExpired ? "text-destructive font-medium" : ""}>
             {formatDate(vehicle.registrationEndDate)}
           </span>
         </div>
         <div className="flex justify-between">
-          <span>COI Ends</span>
+          <span>{t("home.coiEnds")}</span>
           <span className={coiExpired ? "text-destructive font-medium" : ""}>
             {formatDate(vehicle.coiEndDate)}
           </span>
         </div>
         {vehicle.location && (
           <div className="flex justify-between">
-            <span>Location</span>
+            <span>{t("home.location")}</span>
             <span className="max-w-[60%] truncate text-right">{vehicle.location}</span>
           </div>
         )}
         {vehicle.availableAt && (
           <div className="flex justify-between">
-            <span>Available From</span>
+            <span>{t("home.availableFrom")}</span>
             <span>
               {new Date(vehicle.availableAt).toLocaleString("en-US", {
                 month: "short",
@@ -133,7 +135,7 @@ function VehicleCard({
       </div>
       {isActive && (
         <div className="pl-6 pt-2" onClick={(e) => e.stopPropagation()}>
-          <p className="text-muted-foreground mb-2 text-xs">Quick Actions</p>
+          <p className="text-muted-foreground mb-2 text-xs">{t("home.quickActions")}</p>
           <div className="flex flex-wrap gap-2">
             <Button
               size="sm"
@@ -142,7 +144,7 @@ function VehicleCard({
               onClick={onRenewRegistration}
             >
               <RefreshCw className="size-3" />
-              Renew Registration
+              {t("home.renewRegistration")}
             </Button>
             <Button
               size="sm"
@@ -151,7 +153,7 @@ function VehicleCard({
               onClick={onRenewCoi}
             >
               <RefreshCw className="size-3" />
-              Renew COI
+              {t("home.renewCoi")}
             </Button>
             <Button
               size="sm"
@@ -160,7 +162,7 @@ function VehicleCard({
               onClick={onUpdateInfo}
             >
               <Info className="size-3" />
-              Service
+              {t("home.service")}
             </Button>
             <Button
               size="sm"
@@ -169,7 +171,7 @@ function VehicleCard({
               onClick={onStopService}
             >
               <StopCircle className="size-3" />
-              Stop service
+              {t("home.stopService")}
             </Button>
           </div>
         </div>
@@ -186,6 +188,7 @@ interface RenewalState {
 }
 
 export function HomePage() {
+  const { t } = useTranslation();
   useSignal(initData.user);
   const [activeVehicleId, setActiveVehicleId] = useState<string | null>(
     MOCK_VEHICLES[0]?.id ?? null,
@@ -226,12 +229,12 @@ export function HomePage() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-base">
             <Car className="size-4" />
-            Vehicles
+            {t("home.vehicles")}
           </CardTitle>
         </CardHeader>
         <CardContent>
           {vehicles.length === 0 ? (
-            <p className="text-muted-foreground text-sm">No vehicles assigned.</p>
+            <p className="text-muted-foreground text-sm">{t("home.noVehicles")}</p>
           ) : (
             vehicles.map((vehicle, index) => (
               <div key={vehicle.id}>

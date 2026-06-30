@@ -1,15 +1,18 @@
 import { NavLink } from "react-router-dom";
 import { Home, Settings, User } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 import { cn } from "@/lib/utils";
 
-const items = [
-  { to: "/", label: "Home", icon: Home, end: true },
-  { to: "/profile", label: "Profile", icon: User, end: false },
-  { to: "/settings", label: "Settings", icon: Settings, end: false },
-] as const;
-
 export function BottomNav() {
+  const { t } = useTranslation();
+
+  const items = [
+    { to: "/", label: t("nav.home"), icon: Home, end: true },
+    { to: "/profile", label: t("nav.profile"), icon: User, end: false },
+    { to: "/settings", label: t("nav.settings"), icon: Settings, end: false },
+  ] as const;
+
   return (
     <nav
       className="bg-card/95 supports-[backdrop-filter]:bg-card/80 border-t backdrop-blur"
