@@ -12,6 +12,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import { RenewalModal } from "@/components/RenewalModal";
 
 interface Vehicle {
   id: string;
@@ -57,10 +58,14 @@ function VehicleCard({
   vehicle,
   isActive,
   onActivate,
+  onRenewRegistration,
+  onRenewCoi,
 }: {
   vehicle: Vehicle;
   isActive: boolean;
   onActivate: () => void;
+  onRenewRegistration: () => void;
+  onRenewCoi: () => void;
 }) {
   const regExpired = isExpired(vehicle.registrationEndDate);
   const coiExpired = isExpired(vehicle.coiEndDate);
@@ -105,7 +110,12 @@ function VehicleCard({
         <div className="pl-6 pt-2" onClick={(e) => e.stopPropagation()}>
           <p className="text-muted-foreground mb-2 text-xs">Quick Actions</p>
           <div className="flex flex-wrap gap-2">
-            <Button size="sm" variant="secondary" className="h-8 text-xs gap-1.5">
+            <Button
+              size="sm"
+              variant={regExpired ? "destructive" : "secondary"}
+              className="h-8 text-xs gap-1.5"
+              onClick={onRenewRegistration}
+            >
               <RefreshCw className="size-3" />
               Renew Registration
             </Button>
@@ -113,6 +123,7 @@ function VehicleCard({
               size="sm"
               variant={coiExpired ? "destructive" : "secondary"}
               className="h-8 text-xs gap-1.5"
+              onClick={onRenewCoi}
             >
               <RefreshCw className="size-3" />
               Renew COI
@@ -152,11 +163,35 @@ function Row({
   );
 }
 
+type RenewalType = "registration" | "coi";
+
+interface RenewalState {
+  vehicleId: string;
+  type: RenewalType;
+}
+
 export function ProfilePage() {
   const user = useSignal(initData.user);
   const [activeVehicleId, setActiveVehicleId] = useState<string | null>(
     MOCK_VEHICLES[0]?.id ?? null,
   );
+  const [vehicles, setVehicles] = useState(MOCK_VEHICLES);
+  const [renewal, setRenewal] = useState<RenewalState | null>(null);
+
+  const renewalVehicle = renewal ? vehicles.find((v) => v.id === renewal.vehicleId) : null;
+
+  function handleRenewConfirm(newDate: string) {
+    if (!renewal) return;
+    setVehicles((prev) =>
+      prev.map((v) => {
+        if (v.id !== renewal.vehicleId) return v;
+        return renewal.type === "registration"
+          ? { ...v, registrationEndDate: newDate }
+          : { ...v, coiEndDate: newDate };
+      })
+    );
+    setRenewal(null);
+  }
 
   if (!user) {
     return (
@@ -226,22 +261,43 @@ export function ProfilePage() {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          {MOCK_VEHICLES.length === 0 ? (
+          {vehicles.length === 0 ? (
             <p className="text-muted-foreground text-sm">No vehicles assigned.</p>
           ) : (
-            MOCK_VEHICLES.map((vehicle, index) => (
+            vehicles.map((vehicle, index) => (
               <div key={vehicle.id}>
                 {index > 0 && <Separator />}
                 <VehicleCard
                   vehicle={vehicle}
                   isActive={activeVehicleId === vehicle.id}
                   onActivate={() => setActiveVehicleId(vehicle.id)}
+                  onRenewRegistration={() =>
+                    setRenewal({ vehicleId: vehicle.id, type: "registration" })
+                  }
+                  onRenewCoi={() =>
+                    setRenewal({ vehicleId: vehicle.id, type: "coi" })
+                  }
                 />
               </div>
             ))
           )}
         </CardContent>
       </Card>
+
+      {renewalVehicle && renewal && (
+        <RenewalModal
+          open={!!renewal}
+          onOpenChange={(open) => { if (!open) setRenewal(null); }}
+          type={renewal.type}
+          vehicleUnit={renewalVehicle.unit}
+          currentEndDate={
+            renewal.type === "registration"
+              ? renewalVehicle.registrationEndDate
+              : renewalVehicle.coiEndDate
+          }
+          onConfirm={handleRenewConfirm}
+        />
+      )}
     </div>
   );
 }
