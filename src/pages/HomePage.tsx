@@ -13,8 +13,7 @@ import {
   Search,
   StopCircle,
   X,
-  Activity,
-  CircleOff,
+  Check,
 } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
@@ -156,17 +155,6 @@ function VehicleCard({
         <div className="flex items-center gap-2">
           <Car className={`size-4 ${isActive ? "text-primary" : "text-muted-foreground"}`} />
           <span className={`font-medium ${isActive ? "text-primary" : ""}`}>{vehicle.unit}</span>
-          {vehicle.serviceStatus ? (
-            <Activity
-              className="size-3.5 text-green-600 dark:text-green-400"
-              title={t("home.statusWorking")}
-            />
-          ) : (
-            <CircleOff
-              className="size-3.5 text-muted-foreground"
-              title={t("home.statusNotWorking")}
-            />
-          )}
           {isActive ? (
             <Badge variant="default" className="text-xs p-1">
               <CheckCircle2 className="size-3" />
@@ -193,11 +181,11 @@ function VehicleCard({
         </div>
 
         <div className="flex justify-between items-center">
-          <span>{t("home.serviceStatus")}</span>
+          <span>{t("home.service")}</span>
           {vehicle.serviceStatus ? (
-            <Activity className="size-3.5 text-green-600 dark:text-green-400" />
+            <Check className="size-3.5 text-green-600 dark:text-green-400" />
           ) : (
-            <CircleOff className="size-3.5 text-muted-foreground" />
+            <X className="size-3.5 text-destructive" />
           )}
         </div>
 
