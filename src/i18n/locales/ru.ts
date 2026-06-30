@@ -5,27 +5,19 @@ const ru = {
     settings: "Настройки",
   },
   home: {
-    welcome: "Добро пожаловать 👋",
-    welcomeUser: "Привет, {{name}} 👋",
-    subtitle:
-      "Стартовое Telegram Mini App на React, официальном SDK telegram-apps и shadcn/ui.",
-    features: {
-      telegramNative: {
-        title: "Telegram-нативный",
-        description: "Тема, вьюпорт, кнопка назад и initData подключены.",
-      },
-      adaptiveTheming: {
-        title: "Адаптивная тема",
-        description: "Токены shadcn следуют цветовой схеме Telegram.",
-      },
-      viteReact: {
-        title: "Vite + React 19",
-        description: "Быстрый HMR-сервер и оптимизированная production-сборка.",
-      },
-    },
-    exploreProfile: "Откройте профиль",
-    exploreProfileSub: "Данные, которые Telegram передаёт приложению.",
-    open: "Открыть",
+    vehicles: "Транспортные средства",
+    noVehicles: "Нет назначенных ТС.",
+    active: "Активен",
+    vin: "VIN",
+    registrationEnds: "Регистрация до",
+    coiEnds: "Страховка до",
+    location: "Местоположение",
+    availableFrom: "Доступно с",
+    quickActions: "Быстрые действия",
+    renewRegistration: "Продлить регистрацию",
+    renewCoi: "Продлить страховку",
+    service: "Обслуживание",
+    stopService: "Остановить сервис",
   },
   profile: {
     title: "Профиль",
