@@ -1,7 +1,22 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { initData, useSignal } from "@telegram-apps/sdk-react";
 import { useTranslation } from "react-i18next";
-import { Car, CheckCircle2, Circle, Info, RefreshCw, Search, StopCircle, X } from "lucide-react";
+import {
+  Car,
+  CheckCircle2,
+  Circle,
+  Info,
+  MapPin,
+  CalendarClock,
+  Pencil,
+  PencilOff,
+  Search,
+  StopCircle,
+  X,
+  Wrench,
+  CheckCheck,
+  Clock,
+} from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -12,8 +27,9 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { RenewalModal } from "@/components/RenewalModal";
 import { UpdateInfoModal, type VehicleInfo } from "@/components/UpdateInfoModal";
+
+type ServiceStatus = "in_service" | "available" | "out_of_service";
 
 interface Vehicle {
   id: string;
@@ -22,6 +38,7 @@ interface Vehicle {
   vin: string;
   registrationEndDate: string;
   coiEndDate: string;
+  serviceStatus: ServiceStatus;
   location?: string;
   availableAt?: string;
 }
@@ -34,6 +51,9 @@ const MOCK_VEHICLES: Vehicle[] = [
     vin: "1HGCM82633A123456",
     registrationEndDate: "2025-03-15",
     coiEndDate: "2025-06-30",
+    serviceStatus: "in_service",
+    location: "123 Main St, Springfield",
+    availableAt: "2026-07-01T08:00",
   },
   {
     id: "2",
@@ -42,6 +62,7 @@ const MOCK_VEHICLES: Vehicle[] = [
     vin: "2T1BURHE0JC043821",
     registrationEndDate: "2024-11-01",
     coiEndDate: "2025-01-15",
+    serviceStatus: "available",
   },
 ];
 
@@ -57,26 +78,107 @@ function isExpired(dateStr: string) {
   return new Date(dateStr) < new Date();
 }
 
+const SERVICE_STATUS_CONFIG: Record<
+  ServiceStatus,
+  { labelKey: string; icon: React.ReactNode; className: string }
+> = {
+  in_service: {
+    labelKey: "home.statusInService",
+    icon: <Wrench className="size-3" />,
+    className: "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400",
+  },
+  available: {
+    labelKey: "home.statusAvailable",
+    icon: <CheckCheck className="size-3" />,
+    className: "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400",
+  },
+  out_of_service: {
+    labelKey: "home.statusOutOfService",
+    icon: <Clock className="size-3" />,
+    className: "bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400",
+  },
+};
+
+function InlineDateField({
+  value,
+  expired,
+  editMode,
+  onChange,
+}: {
+  value: string;
+  expired: boolean;
+  editMode: boolean;
+  onChange: (v: string) => void;
+}) {
+  const [editing, setEditing] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  function handleClick() {
+    if (!editMode) return;
+    setEditing(true);
+    setTimeout(() => inputRef.current?.focus(), 0);
+  }
+
+  function handleBlur(e: React.FocusEvent<HTMLInputElement>) {
+    if (e.target.value) onChange(e.target.value);
+    setEditing(false);
+  }
+
+  if (editing) {
+    return (
+      <input
+        ref={inputRef}
+        type="date"
+        defaultValue={value}
+        min={new Date().toISOString().split("T")[0]}
+        onBlur={handleBlur}
+        onKeyDown={(e) => {
+          if (e.key === "Enter") e.currentTarget.blur();
+          if (e.key === "Escape") setEditing(false);
+        }}
+        className="rounded border bg-background px-1 py-0.5 text-xs shadow-sm focus:outline-none focus:ring-1 focus:ring-ring"
+      />
+    );
+  }
+
+  return (
+    <span
+      onClick={handleClick}
+      className={[
+        expired ? "text-destructive font-medium" : "",
+        editMode
+          ? "cursor-pointer underline decoration-dashed underline-offset-2 hover:opacity-70"
+          : "",
+      ]
+        .filter(Boolean)
+        .join(" ")}
+    >
+      {formatDate(value)}
+    </span>
+  );
+}
+
 function VehicleCard({
   vehicle,
   isActive,
+  editMode,
   onActivate,
-  onRenewRegistration,
-  onRenewCoi,
   onUpdateInfo,
   onStopService,
+  onUpdateDate,
 }: {
   vehicle: Vehicle;
   isActive: boolean;
+  editMode: boolean;
   onActivate: () => void;
-  onRenewRegistration: () => void;
-  onRenewCoi: () => void;
   onUpdateInfo: () => void;
   onStopService: () => void;
+  onUpdateDate: (id: string, field: "registrationEndDate" | "coiEndDate", value: string) => void;
 }) {
   const { t } = useTranslation();
   const regExpired = isExpired(vehicle.registrationEndDate);
   const coiExpired = isExpired(vehicle.coiEndDate);
+  const statusConfig = SERVICE_STATUS_CONFIG[vehicle.serviceStatus];
 
   return (
     <div
@@ -104,32 +206,59 @@ function VehicleCard({
         </div>
         <Badge variant="outline">{vehicle.plateNumber}</Badge>
       </div>
+
       <div className="text-muted-foreground grid grid-cols-1 gap-1 pl-6 text-xs">
         <div className="flex justify-between">
           <span>{t("home.vin")}</span>
           <span className="font-mono">{vehicle.vin}</span>
         </div>
-        <div className="flex justify-between">
+
+        <div className="flex justify-between items-center">
+          <span>{t("home.serviceStatus")}</span>
+          <span
+            className={`inline-flex items-center gap-1 rounded-full px-1.5 py-0.5 font-medium ${statusConfig.className}`}
+          >
+            {statusConfig.icon}
+            {t(statusConfig.labelKey)}
+          </span>
+        </div>
+
+        <div className="flex justify-between items-center">
           <span>{t("home.registrationEnds")}</span>
-          <span className={regExpired ? "text-destructive font-medium" : ""}>
-            {formatDate(vehicle.registrationEndDate)}
-          </span>
+          <InlineDateField
+            value={vehicle.registrationEndDate}
+            expired={regExpired}
+            editMode={editMode}
+            onChange={(v) => onUpdateDate(vehicle.id, "registrationEndDate", v)}
+          />
         </div>
-        <div className="flex justify-between">
+
+        <div className="flex justify-between items-center">
           <span>{t("home.coiEnds")}</span>
-          <span className={coiExpired ? "text-destructive font-medium" : ""}>
-            {formatDate(vehicle.coiEndDate)}
-          </span>
+          <InlineDateField
+            value={vehicle.coiEndDate}
+            expired={coiExpired}
+            editMode={editMode}
+            onChange={(v) => onUpdateDate(vehicle.id, "coiEndDate", v)}
+          />
         </div>
+
         {vehicle.location && (
-          <div className="flex justify-between">
-            <span>{t("home.location")}</span>
+          <div className="flex justify-between gap-2">
+            <span className="flex items-center gap-1 shrink-0">
+              <MapPin className="size-3" />
+              {t("home.location")}
+            </span>
             <span className="max-w-[60%] truncate text-right">{vehicle.location}</span>
           </div>
         )}
+
         {vehicle.availableAt && (
-          <div className="flex justify-between">
-            <span>{t("home.availableFrom")}</span>
+          <div className="flex justify-between gap-2">
+            <span className="flex items-center gap-1 shrink-0">
+              <CalendarClock className="size-3" />
+              {t("home.availableFrom")}
+            </span>
             <span>
               {new Date(vehicle.availableAt).toLocaleString("en-US", {
                 month: "short",
@@ -141,28 +270,11 @@ function VehicleCard({
           </div>
         )}
       </div>
-      {isActive && (
+
+      {isActive && !editMode && (
         <div className="pl-6 pt-2" onClick={(e) => e.stopPropagation()}>
           <p className="text-muted-foreground mb-2 text-xs">{t("home.quickActions")}</p>
           <div className="flex flex-wrap gap-2">
-            <Button
-              size="sm"
-              variant={regExpired ? "destructive" : "secondary"}
-              className="h-8 text-xs gap-1.5 cursor-pointer"
-              onClick={onRenewRegistration}
-            >
-              <RefreshCw className="size-3" />
-              {t("home.renewRegistration")}
-            </Button>
-            <Button
-              size="sm"
-              variant={coiExpired ? "destructive" : "secondary"}
-              className="h-8 text-xs gap-1.5 cursor-pointer"
-              onClick={onRenewCoi}
-            >
-              <RefreshCw className="size-3" />
-              {t("home.renewCoi")}
-            </Button>
             <Button
               size="sm"
               variant="outline"
@@ -188,13 +300,6 @@ function VehicleCard({
   );
 }
 
-type RenewalType = "registration" | "coi";
-
-interface RenewalState {
-  vehicleId: string;
-  type: RenewalType;
-}
-
 export function HomePage() {
   const { t } = useTranslation();
   useSignal(initData.user);
@@ -203,7 +308,7 @@ export function HomePage() {
   );
   const [vehicles, setVehicles] = useState(MOCK_VEHICLES);
   const [search, setSearch] = useState("");
-  const [renewal, setRenewal] = useState<RenewalState | null>(null);
+  const [editMode, setEditMode] = useState(false);
   const [updateInfoVehicleId, setUpdateInfoVehicleId] = useState<string | null>(null);
 
   const query = search.trim().toLowerCase();
@@ -216,39 +321,44 @@ export function HomePage() {
       )
     : vehicles;
 
-  const renewalVehicle = renewal ? vehicles.find((v) => v.id === renewal.vehicleId) : null;
-  const updateInfoVehicle = updateInfoVehicleId ? vehicles.find((v) => v.id === updateInfoVehicleId) : null;
+  const updateInfoVehicle = updateInfoVehicleId
+    ? vehicles.find((v) => v.id === updateInfoVehicleId)
+    : null;
 
   function handleUpdateInfoConfirm(info: VehicleInfo) {
     if (!updateInfoVehicleId) return;
     setVehicles((prev) =>
-      prev.map((v) =>
-        v.id === updateInfoVehicleId ? { ...v, ...info } : v,
-      ),
+      prev.map((v) => (v.id === updateInfoVehicleId ? { ...v, ...info } : v)),
     );
     setUpdateInfoVehicleId(null);
   }
 
-  function handleRenewConfirm(newDate: string) {
-    if (!renewal) return;
-    setVehicles((prev) =>
-      prev.map((v) => {
-        if (v.id !== renewal.vehicleId) return v;
-        return renewal.type === "registration"
-          ? { ...v, registrationEndDate: newDate }
-          : { ...v, coiEndDate: newDate };
-      })
-    );
-    setRenewal(null);
+  function handleUpdateDate(
+    id: string,
+    field: "registrationEndDate" | "coiEndDate",
+    value: string,
+  ) {
+    setVehicles((prev) => prev.map((v) => (v.id === id ? { ...v, [field]: value } : v)));
   }
 
   return (
     <div className="space-y-6">
       <Card>
         <CardHeader className="space-y-3">
-          <CardTitle className="flex items-center gap-2 text-base">
-            <Car className="size-4" />
-            {t("home.vehicles")}
+          <CardTitle className="flex items-center justify-between text-base">
+            <div className="flex items-center gap-2">
+              <Car className="size-4" />
+              {t("home.vehicles")}
+            </div>
+            <Button
+              size="sm"
+              variant={editMode ? "default" : "ghost"}
+              className="h-7 w-7 p-0 cursor-pointer"
+              onClick={() => setEditMode((v) => !v)}
+              title={editMode ? t("home.exitEditMode") : t("home.enterEditMode")}
+            >
+              {editMode ? <PencilOff className="size-3.5" /> : <Pencil className="size-3.5" />}
+            </Button>
           </CardTitle>
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-3.5 text-muted-foreground pointer-events-none" />
@@ -268,6 +378,11 @@ export function HomePage() {
               </button>
             )}
           </div>
+          {editMode && (
+            <p className="text-xs text-muted-foreground">
+              {t("home.editModeHint")}
+            </p>
+          )}
         </CardHeader>
         <CardContent>
           {filteredVehicles.length === 0 ? (
@@ -281,15 +396,11 @@ export function HomePage() {
                 <VehicleCard
                   vehicle={vehicle}
                   isActive={activeVehicleId === vehicle.id}
+                  editMode={editMode}
                   onActivate={() => setActiveVehicleId(vehicle.id)}
-                  onRenewRegistration={() =>
-                    setRenewal({ vehicleId: vehicle.id, type: "registration" })
-                  }
-                  onRenewCoi={() =>
-                    setRenewal({ vehicleId: vehicle.id, type: "coi" })
-                  }
                   onUpdateInfo={() => setUpdateInfoVehicleId(vehicle.id)}
                   onStopService={() => console.log("Stop service", vehicle.id)}
+                  onUpdateDate={handleUpdateDate}
                 />
               </div>
             ))
@@ -300,24 +411,11 @@ export function HomePage() {
       {updateInfoVehicle && (
         <UpdateInfoModal
           open={!!updateInfoVehicleId}
-          onOpenChange={(open) => { if (!open) setUpdateInfoVehicleId(null); }}
+          onOpenChange={(open) => {
+            if (!open) setUpdateInfoVehicleId(null);
+          }}
           vehicleUnit={updateInfoVehicle.unit}
           onConfirm={handleUpdateInfoConfirm}
-        />
-      )}
-
-      {renewalVehicle && renewal && (
-        <RenewalModal
-          open={!!renewal}
-          onOpenChange={(open) => { if (!open) setRenewal(null); }}
-          type={renewal.type}
-          vehicleUnit={renewalVehicle.unit}
-          currentEndDate={
-            renewal.type === "registration"
-              ? renewalVehicle.registrationEndDate
-              : renewalVehicle.coiEndDate
-          }
-          onConfirm={handleRenewConfirm}
         />
       )}
     </div>
