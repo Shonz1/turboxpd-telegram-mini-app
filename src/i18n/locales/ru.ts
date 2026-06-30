@@ -19,6 +19,8 @@ const ru = {
     renewCoi: "Продлить страховку",
     service: "Обслуживание",
     stopService: "Остановить сервис",
+    searchVehicles: "Поиск по названию, номеру или VIN…",
+    noVehiclesFound: "Транспортные средства не найдены.",
   },
   profile: {
     title: "Профиль",

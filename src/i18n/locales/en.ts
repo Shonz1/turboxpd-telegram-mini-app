@@ -19,6 +19,8 @@ const en = {
     renewCoi: "Renew COI",
     service: "Service",
     stopService: "Stop service",
+    searchVehicles: "Search by unit, plate or VIN…",
+    noVehiclesFound: "No vehicles match your search.",
   },
   profile: {
     title: "Profile",

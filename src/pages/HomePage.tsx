@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { initData, useSignal } from "@telegram-apps/sdk-react";
 import { useTranslation } from "react-i18next";
-import { Car, CheckCircle2, Info, RefreshCw, StopCircle } from "lucide-react";
+import { Car, CheckCircle2, Circle, Info, RefreshCw, Search, StopCircle, X } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -87,18 +87,18 @@ function VehicleCard({
           <Car className={`size-4 ${isActive ? "text-primary" : "text-muted-foreground"}`} />
           <span className={`font-medium ${isActive ? "text-primary" : ""}`}>{vehicle.unit}</span>
           {isActive ? (
-            <Badge variant="default" className="text-xs gap-1 py-0">
+            <Badge variant="default" className="text-xs p-1">
               <CheckCircle2 className="size-3" />
-              {t("home.active")}
             </Badge>
           ) : (
             <Button
               size="sm"
               variant="ghost"
-              className="h-6 px-2 text-xs text-muted-foreground hover:text-primary"
+              className="h-6 w-6 p-0 text-muted-foreground hover:text-primary cursor-pointer"
               onClick={onActivate}
+              title={t("home.setActive")}
             >
-              {t("home.setActive")}
+              <Circle className="size-3" />
             </Button>
           )}
         </div>
@@ -148,7 +148,7 @@ function VehicleCard({
             <Button
               size="sm"
               variant={regExpired ? "destructive" : "secondary"}
-              className="h-8 text-xs gap-1.5"
+              className="h-8 text-xs gap-1.5 cursor-pointer"
               onClick={onRenewRegistration}
             >
               <RefreshCw className="size-3" />
@@ -157,7 +157,7 @@ function VehicleCard({
             <Button
               size="sm"
               variant={coiExpired ? "destructive" : "secondary"}
-              className="h-8 text-xs gap-1.5"
+              className="h-8 text-xs gap-1.5 cursor-pointer"
               onClick={onRenewCoi}
             >
               <RefreshCw className="size-3" />
@@ -166,7 +166,7 @@ function VehicleCard({
             <Button
               size="sm"
               variant="outline"
-              className="h-8 text-xs gap-1.5"
+              className="h-8 text-xs gap-1.5 cursor-pointer"
               onClick={onUpdateInfo}
             >
               <Info className="size-3" />
@@ -175,7 +175,7 @@ function VehicleCard({
             <Button
               size="sm"
               variant="destructive"
-              className="h-8 text-xs gap-1.5"
+              className="h-8 text-xs gap-1.5 cursor-pointer"
               onClick={onStopService}
             >
               <StopCircle className="size-3" />
@@ -202,8 +202,19 @@ export function HomePage() {
     MOCK_VEHICLES[0]?.id ?? null,
   );
   const [vehicles, setVehicles] = useState(MOCK_VEHICLES);
+  const [search, setSearch] = useState("");
   const [renewal, setRenewal] = useState<RenewalState | null>(null);
   const [updateInfoVehicleId, setUpdateInfoVehicleId] = useState<string | null>(null);
+
+  const query = search.trim().toLowerCase();
+  const filteredVehicles = query
+    ? vehicles.filter(
+        (v) =>
+          v.unit.toLowerCase().includes(query) ||
+          v.plateNumber.toLowerCase().includes(query) ||
+          v.vin.toLowerCase().includes(query),
+      )
+    : vehicles;
 
   const renewalVehicle = renewal ? vehicles.find((v) => v.id === renewal.vehicleId) : null;
   const updateInfoVehicle = updateInfoVehicleId ? vehicles.find((v) => v.id === updateInfoVehicleId) : null;
@@ -234,17 +245,37 @@ export function HomePage() {
   return (
     <div className="space-y-6">
       <Card>
-        <CardHeader>
+        <CardHeader className="space-y-3">
           <CardTitle className="flex items-center gap-2 text-base">
             <Car className="size-4" />
             {t("home.vehicles")}
           </CardTitle>
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-3.5 text-muted-foreground pointer-events-none" />
+            <input
+              type="text"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder={t("home.searchVehicles")}
+              className="w-full rounded-md border bg-background pl-8 pr-8 py-2 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-ring"
+            />
+            {search && (
+              <button
+                onClick={() => setSearch("")}
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground cursor-pointer"
+              >
+                <X className="size-3.5" />
+              </button>
+            )}
+          </div>
         </CardHeader>
         <CardContent>
-          {vehicles.length === 0 ? (
-            <p className="text-muted-foreground text-sm">{t("home.noVehicles")}</p>
+          {filteredVehicles.length === 0 ? (
+            <p className="text-muted-foreground text-sm">
+              {search ? t("home.noVehiclesFound") : t("home.noVehicles")}
+            </p>
           ) : (
-            vehicles.map((vehicle, index) => (
+            filteredVehicles.map((vehicle, index) => (
               <div key={vehicle.id}>
                 {index > 0 && <Separator />}
                 <VehicleCard
