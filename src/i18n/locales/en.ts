@@ -22,8 +22,6 @@ const en = {
     searchVehicles: "Search by unit, plate or VIN…",
     noVehiclesFound: "No vehicles match your search.",
     serviceStatus: "Service Status",
-    statusWorking: "Works today",
-    statusNotWorking: "Doesn't work today",
     enterEditMode: "Edit vehicles",
     exitEditMode: "Done editing",
     editModeHint: "Tap a date to change it.",

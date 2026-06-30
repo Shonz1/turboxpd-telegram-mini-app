@@ -22,8 +22,6 @@ const ru = {
     searchVehicles: "Поиск по названию, номеру или VIN…",
     noVehiclesFound: "Транспортные средства не найдены.",
     serviceStatus: "Статус сервиса",
-    statusWorking: "Работает сегодня",
-    statusNotWorking: "Не работает сегодня",
     enterEditMode: "Редактировать",
     exitEditMode: "Готово",
     editModeHint: "Нажмите на дату, чтобы изменить её.",

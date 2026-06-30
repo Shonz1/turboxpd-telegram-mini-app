@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { initData, useSignal } from "@telegram-apps/sdk-react";
 import { useTranslation } from "react-i18next";
 import {
@@ -26,6 +26,8 @@ import {
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { UpdateInfoModal, type VehicleInfo } from "@/components/UpdateInfoModal";
+
+type ServiceStatus = "in_service" | "available" | "out_of_service";
 
 interface Vehicle {
   id: string;
@@ -73,7 +75,6 @@ function formatDate(dateStr: string) {
 function isExpired(dateStr: string) {
   return new Date(dateStr) < new Date();
 }
-
 
 function InlineDateField({
   value,
@@ -146,6 +147,7 @@ function VehicleCard({
   const { t } = useTranslation();
   const regExpired = isExpired(vehicle.registrationEndDate);
   const coiExpired = isExpired(vehicle.coiEndDate);
+  const statusConfig = SERVICE_STATUS_CONFIG[vehicle.serviceStatus];
 
   return (
     <div

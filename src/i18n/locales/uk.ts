@@ -22,8 +22,6 @@ const uk = {
     searchVehicles: "Пошук за назвою, номером або VIN…",
     noVehiclesFound: "Жодного ТЗ не знайдено.",
     serviceStatus: "Статус сервісу",
-    statusWorking: "Працює сьогодні",
-    statusNotWorking: "Не працює сьогодні",
     enterEditMode: "Редагувати",
     exitEditMode: "Готово",
     editModeHint: "Натисніть на дату, щоб змінити її.",
