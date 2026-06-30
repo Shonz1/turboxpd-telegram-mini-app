@@ -5,27 +5,19 @@ const en = {
     settings: "Settings",
   },
   home: {
-    welcome: "Welcome 👋",
-    welcomeUser: "Welcome, {{name}} 👋",
-    subtitle:
-      "A starter Telegram Mini App built with React, the official telegram-apps SDK, and shadcn/ui.",
-    features: {
-      telegramNative: {
-        title: "Telegram-native",
-        description: "Theme, viewport, back button and init data wired in.",
-      },
-      adaptiveTheming: {
-        title: "Adaptive theming",
-        description: "shadcn tokens follow the user's Telegram color scheme.",
-      },
-      viteReact: {
-        title: "Vite + React 19",
-        description: "Fast HMR dev server and an optimized production build.",
-      },
-    },
-    exploreProfile: "Explore your profile",
-    exploreProfileSub: "See the data Telegram passes to the app.",
-    open: "Open",
+    vehicles: "Vehicles",
+    noVehicles: "No vehicles assigned.",
+    active: "Active",
+    vin: "VIN",
+    registrationEnds: "Registration Ends",
+    coiEnds: "COI Ends",
+    location: "Location",
+    availableFrom: "Available From",
+    quickActions: "Quick Actions",
+    renewRegistration: "Renew Registration",
+    renewCoi: "Renew COI",
+    service: "Service",
+    stopService: "Stop service",
   },
   profile: {
     title: "Profile",

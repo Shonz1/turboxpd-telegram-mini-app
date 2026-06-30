@@ -5,27 +5,19 @@ const uk = {
     settings: "Налаштування",
   },
   home: {
-    welcome: "Ласкаво просимо 👋",
-    welcomeUser: "Привіт, {{name}} 👋",
-    subtitle:
-      "Стартовий Telegram Mini App на React, офіційному SDK telegram-apps та shadcn/ui.",
-    features: {
-      telegramNative: {
-        title: "Telegram-нативний",
-        description: "Тема, вʼюпорт, кнопка назад та initData підключені.",
-      },
-      adaptiveTheming: {
-        title: "Адаптивна тема",
-        description: "Токени shadcn відповідають кольоровій схемі Telegram.",
-      },
-      viteReact: {
-        title: "Vite + React 19",
-        description: "Швидкий HMR-сервер та оптимізована production-збірка.",
-      },
-    },
-    exploreProfile: "Відкрийте профіль",
-    exploreProfileSub: "Дані, які Telegram передає застосунку.",
-    open: "Відкрити",
+    vehicles: "Транспортні засоби",
+    noVehicles: "Немає призначених ТЗ.",
+    active: "Активний",
+    vin: "VIN",
+    registrationEnds: "Реєстрація до",
+    coiEnds: "Страховка до",
+    location: "Місцезнаходження",
+    availableFrom: "Доступно з",
+    quickActions: "Швидкі дії",
+    renewRegistration: "Поновити реєстрацію",
+    renewCoi: "Поновити страховку",
+    service: "Обслуговування",
+    stopService: "Зупинити сервіс",
   },
   profile: {
     title: "Профіль",
