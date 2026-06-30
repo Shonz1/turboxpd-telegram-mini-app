@@ -7,8 +7,7 @@ import pkg from "./package.json" with { type: "json" };
 
 // https://vite.dev/config/
 export default defineConfig({
-  // Relative base so the build works under any hosting subpath, which Telegram tolerates.
-  base: "./",
+  base: process.env.VITE_BASE_URL ?? "./",
   define: {
     APP_VERSION: JSON.stringify(pkg.version),
   },
