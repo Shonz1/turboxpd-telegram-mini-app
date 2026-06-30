@@ -13,8 +13,8 @@ import {
   Search,
   StopCircle,
   X,
-  CheckCheck,
-  XCircle,
+  Activity,
+  CircleOff,
 } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
@@ -75,21 +75,6 @@ function isExpired(dateStr: string) {
   return new Date(dateStr) < new Date();
 }
 
-const SERVICE_STATUS_CONFIG: Record<
-  "working" | "not_working",
-  { labelKey: string; icon: React.ReactNode; className: string }
-> = {
-  working: {
-    labelKey: "home.statusWorking",
-    icon: <CheckCheck className="size-3" />,
-    className: "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400",
-  },
-  not_working: {
-    labelKey: "home.statusNotWorking",
-    icon: <XCircle className="size-3" />,
-    className: "bg-muted text-muted-foreground",
-  },
-};
 
 function InlineDateField({
   value,
@@ -162,7 +147,6 @@ function VehicleCard({
   const { t } = useTranslation();
   const regExpired = isExpired(vehicle.registrationEndDate);
   const coiExpired = isExpired(vehicle.coiEndDate);
-  const statusConfig = SERVICE_STATUS_CONFIG[vehicle.serviceStatus ? "working" : "not_working"];
 
   return (
     <div
@@ -172,6 +156,17 @@ function VehicleCard({
         <div className="flex items-center gap-2">
           <Car className={`size-4 ${isActive ? "text-primary" : "text-muted-foreground"}`} />
           <span className={`font-medium ${isActive ? "text-primary" : ""}`}>{vehicle.unit}</span>
+          {vehicle.serviceStatus ? (
+            <Activity
+              className="size-3.5 text-green-600 dark:text-green-400"
+              title={t("home.statusWorking")}
+            />
+          ) : (
+            <CircleOff
+              className="size-3.5 text-muted-foreground"
+              title={t("home.statusNotWorking")}
+            />
+          )}
           {isActive ? (
             <Badge variant="default" className="text-xs p-1">
               <CheckCircle2 className="size-3" />
@@ -197,15 +192,7 @@ function VehicleCard({
           <span className="font-mono">{vehicle.vin}</span>
         </div>
 
-        <div className="flex justify-between items-center">
-          <span>{t("home.serviceStatus")}</span>
-          <span
-            className={`inline-flex items-center gap-1 rounded-full px-1.5 py-0.5 font-medium ${statusConfig.className}`}
-          >
-            {statusConfig.icon}
-            {t(statusConfig.labelKey)}
-          </span>
-        </div>
+
 
         <div className="flex justify-between items-center">
           <span>{t("home.registrationEnds")}</span>
