@@ -8,6 +8,7 @@ const uk = {
     vehicles: "Транспортні засоби",
     noVehicles: "Немає призначених ТЗ.",
     active: "Активний",
+    setActive: "Зробити активним",
     vin: "VIN",
     registrationEnds: "Реєстрація до",
     coiEnds: "Страховка до",

@@ -8,6 +8,7 @@ const ru = {
     vehicles: "Транспортные средства",
     noVehicles: "Нет назначенных ТС.",
     active: "Активен",
+    setActive: "Сделать активным",
     vin: "VIN",
     registrationEnds: "Регистрация до",
     coiEnds: "Страховка до",
