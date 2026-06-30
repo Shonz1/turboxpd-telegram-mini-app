@@ -93,11 +93,10 @@ export function UpdateInfoModal({
                 className="flex-1 rounded-md border bg-background px-3 py-2 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-ring"
               />
               <Button
-                size="sm"
                 variant="outline"
                 onClick={handleCurrentLocation}
                 disabled={locating}
-                className="shrink-0 gap-1.5"
+                className="shrink-0 gap-1.5 h-9 px-3 text-sm cursor-pointer"
               >
                 <LocateFixed className="size-3.5" />
                 {locating ? "Locating…" : "Current"}

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { initData, useSignal } from "@telegram-apps/sdk-react";
 import { useTranslation } from "react-i18next";
-import { Car, CheckCircle2, Info, RefreshCw, StopCircle } from "lucide-react";
+import { Car, CheckCircle2, Circle, Info, RefreshCw, StopCircle } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -87,18 +87,18 @@ function VehicleCard({
           <Car className={`size-4 ${isActive ? "text-primary" : "text-muted-foreground"}`} />
           <span className={`font-medium ${isActive ? "text-primary" : ""}`}>{vehicle.unit}</span>
           {isActive ? (
-            <Badge variant="default" className="text-xs gap-1 py-0">
+            <Badge variant="default" className="text-xs p-1">
               <CheckCircle2 className="size-3" />
-              {t("home.active")}
             </Badge>
           ) : (
             <Button
               size="sm"
               variant="ghost"
-              className="h-6 px-2 text-xs text-muted-foreground hover:text-primary"
+              className="h-6 w-6 p-0 text-muted-foreground hover:text-primary cursor-pointer"
               onClick={onActivate}
+              title={t("home.setActive")}
             >
-              {t("home.setActive")}
+              <Circle className="size-3" />
             </Button>
           )}
         </div>
@@ -148,7 +148,7 @@ function VehicleCard({
             <Button
               size="sm"
               variant={regExpired ? "destructive" : "secondary"}
-              className="h-8 text-xs gap-1.5"
+              className="h-8 text-xs gap-1.5 cursor-pointer"
               onClick={onRenewRegistration}
             >
               <RefreshCw className="size-3" />
@@ -157,7 +157,7 @@ function VehicleCard({
             <Button
               size="sm"
               variant={coiExpired ? "destructive" : "secondary"}
-              className="h-8 text-xs gap-1.5"
+              className="h-8 text-xs gap-1.5 cursor-pointer"
               onClick={onRenewCoi}
             >
               <RefreshCw className="size-3" />
@@ -166,7 +166,7 @@ function VehicleCard({
             <Button
               size="sm"
               variant="outline"
-              className="h-8 text-xs gap-1.5"
+              className="h-8 text-xs gap-1.5 cursor-pointer"
               onClick={onUpdateInfo}
             >
               <Info className="size-3" />
@@ -175,7 +175,7 @@ function VehicleCard({
             <Button
               size="sm"
               variant="destructive"
-              className="h-8 text-xs gap-1.5"
+              className="h-8 text-xs gap-1.5 cursor-pointer"
               onClick={onStopService}
             >
               <StopCircle className="size-3" />
