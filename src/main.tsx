@@ -12,6 +12,14 @@ import "@/index.css";
 
 setupMockEnv();
 
+// Telegram appends its launch params (tgWebAppData, tgWebAppVersion, etc.)
+// directly to the URL hash, e.g. "#tgWebAppData=user%3D...". HashRouter
+// treats the hash as the path, so the router sees "/tgWebAppData=..." and
+// finds no matching route. Strip those params before the router mounts.
+if (window.location.hash.startsWith("#tgWebApp")) {
+  window.history.replaceState(null, "", window.location.pathname + "#/");
+}
+
 try {
   init({ debug: import.meta.env.DEV });
 } catch (err) {
