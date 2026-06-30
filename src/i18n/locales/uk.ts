@@ -19,6 +19,8 @@ const uk = {
     renewCoi: "Поновити страховку",
     service: "Обслуговування",
     stopService: "Зупинити сервіс",
+    searchVehicles: "Пошук за назвою, номером або VIN…",
+    noVehiclesFound: "Жодного ТЗ не знайдено.",
   },
   profile: {
     title: "Профіль",
