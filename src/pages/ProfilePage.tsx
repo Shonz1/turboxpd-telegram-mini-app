@@ -1,8 +1,10 @@
+import { useState } from "react";
 import { initData, useSignal } from "@telegram-apps/sdk-react";
-import { AtSign, BadgeCheck, Car, Globe, Hash } from "lucide-react";
+import { AtSign, BadgeCheck, Car, CheckCircle2, Globe, Hash, RefreshCw } from "lucide-react";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -51,16 +53,33 @@ function isExpired(dateStr: string) {
   return new Date(dateStr) < new Date();
 }
 
-function VehicleCard({ vehicle }: { vehicle: Vehicle }) {
+function VehicleCard({
+  vehicle,
+  isActive,
+  onActivate,
+}: {
+  vehicle: Vehicle;
+  isActive: boolean;
+  onActivate: () => void;
+}) {
   const regExpired = isExpired(vehicle.registrationEndDate);
   const coiExpired = isExpired(vehicle.coiEndDate);
 
   return (
-    <div className="space-y-2 py-4">
+    <div
+      className={`space-y-2 py-4 rounded-lg transition-colors cursor-pointer px-2 -mx-2 ${isActive ? "bg-secondary/50" : "hover:bg-secondary/20"}`}
+      onClick={onActivate}
+    >
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <Car className="text-muted-foreground size-4" />
-          <span className="font-medium">{vehicle.unit}</span>
+          <Car className={`size-4 ${isActive ? "text-primary" : "text-muted-foreground"}`} />
+          <span className={`font-medium ${isActive ? "text-primary" : ""}`}>{vehicle.unit}</span>
+          {isActive && (
+            <Badge variant="default" className="text-xs gap-1 py-0">
+              <CheckCircle2 className="size-3" />
+              Active
+            </Badge>
+          )}
         </div>
         <Badge variant="outline">{vehicle.plateNumber}</Badge>
       </div>
@@ -82,6 +101,29 @@ function VehicleCard({ vehicle }: { vehicle: Vehicle }) {
           </span>
         </div>
       </div>
+      {isActive && (
+        <div className="pl-6 pt-2" onClick={(e) => e.stopPropagation()}>
+          <p className="text-muted-foreground mb-2 text-xs">Quick Actions</p>
+          <div className="flex flex-wrap gap-2">
+            <Button size="sm" variant="secondary" className="h-8 text-xs gap-1.5">
+              <RefreshCw className="size-3" />
+              Renew Registration
+            </Button>
+            <Button
+              size="sm"
+              variant={coiExpired ? "destructive" : "secondary"}
+              className="h-8 text-xs gap-1.5"
+            >
+              <RefreshCw className="size-3" />
+              Renew COI
+            </Button>
+            <Button size="sm" variant="outline" className="h-8 text-xs gap-1.5">
+              <Car className="size-3" />
+              Update Info
+            </Button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -112,6 +154,9 @@ function Row({
 
 export function ProfilePage() {
   const user = useSignal(initData.user);
+  const [activeVehicleId, setActiveVehicleId] = useState<string | null>(
+    MOCK_VEHICLES[0]?.id ?? null,
+  );
 
   if (!user) {
     return (
@@ -187,7 +232,11 @@ export function ProfilePage() {
             MOCK_VEHICLES.map((vehicle, index) => (
               <div key={vehicle.id}>
                 {index > 0 && <Separator />}
-                <VehicleCard vehicle={vehicle} />
+                <VehicleCard
+                  vehicle={vehicle}
+                  isActive={activeVehicleId === vehicle.id}
+                  onActivate={() => setActiveVehicleId(vehicle.id)}
+                />
               </div>
             ))
           )}
