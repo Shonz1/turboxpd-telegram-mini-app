@@ -80,18 +80,26 @@ function VehicleCard({
 
   return (
     <div
-      className={`space-y-2 py-4 rounded-lg transition-colors cursor-pointer px-2 -mx-2 ${isActive ? "bg-secondary/50" : "hover:bg-secondary/20"}`}
-      onClick={onActivate}
+      className={`space-y-2 py-4 rounded-lg transition-colors px-2 -mx-2 ${isActive ? "bg-secondary/50" : ""}`}
     >
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Car className={`size-4 ${isActive ? "text-primary" : "text-muted-foreground"}`} />
           <span className={`font-medium ${isActive ? "text-primary" : ""}`}>{vehicle.unit}</span>
-          {isActive && (
+          {isActive ? (
             <Badge variant="default" className="text-xs gap-1 py-0">
               <CheckCircle2 className="size-3" />
               {t("home.active")}
             </Badge>
+          ) : (
+            <Button
+              size="sm"
+              variant="ghost"
+              className="h-6 px-2 text-xs text-muted-foreground hover:text-primary"
+              onClick={onActivate}
+            >
+              {t("home.setActive")}
+            </Button>
           )}
         </div>
         <Badge variant="outline">{vehicle.plateNumber}</Badge>

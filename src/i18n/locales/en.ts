@@ -8,6 +8,7 @@ const en = {
     vehicles: "Vehicles",
     noVehicles: "No vehicles assigned.",
     active: "Active",
+    setActive: "Set Active",
     vin: "VIN",
     registrationEnds: "Registration Ends",
     coiEnds: "COI Ends",
